@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <header>
       <h1>
         <img src="~/assets/image/logo-everyones-toilet.png" alt="みんなのトイレ" />
@@ -10,8 +10,8 @@
         <li class="toilet01">
           <img src="~/assets/image/toilet-close-used.png" alt="個室1" />
         </li>
-        <li class="toilet02"><a href="" id="toilet2"></a></li>
-        <li class="toilet03"><a href=""></a></li>
+        <li class="toilet02"><nuxt-link to="/rooms/2" id="toilet2"></nuxt-link></li>
+        <li class="toilet03"><nuxt-link to="/rooms/3" id="toilet3"></nuxt-link></li>
         <li class="toilet04"><img src="~/assets/image/toilet-close-used.png" alt="個室4"></li>
         <li class="toilet05"><img src="~/assets/image/malfunction.png" alt="個室5"></li>
       </ul>
@@ -27,7 +27,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 /* トップページ */
 .everyones-toilet {
   display: -webkit-box;
@@ -56,4 +56,11 @@ export default {
 .everyones-toilet li a:focus {
   background-image: url(~assets/image/toilet-open.png);
 }
+
+@media all and (max-width: 980px) {
+  .everyones-toilet li a {
+    background-size: 100%;
+  }
+}
+
 </style>
