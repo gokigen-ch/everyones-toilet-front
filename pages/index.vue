@@ -2,7 +2,7 @@
   <div>
     <header>
       <h1>
-        <img src="/image/logo-everyones-toilet.png" alt="みんなのトイレ" />
+        <img src="/images/logo-everyones-toilet.png" alt="みんなのトイレ" />
       </h1>
     </header>
     <main>
