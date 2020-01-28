@@ -1,0 +1,45 @@
+/* とりあえずのreset css
+-------------------------------*/
+*, *:before, *:after {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: normal;
+  font-size: 100%;
+  vertical-align: baseline;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+@font-face{ 
+	font-family: 'kawaii-tegaki-font'; 
+	src: url('~assets/font/KTEGAKI.ttf') format('truetype'); 
+	font-weight: normal; 
+	font-style: normal;
+}
+
+body {
+  background: #aaa;
+  font-size: 15px;
+  line-height: 1.2;
+  text-align: center;
+  font-family: 'kawaii-tegaki-font', sans-serif;
+}
+img {
+  max-width: 100%;
+}
+ul {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+}
+header {
+  padding: 40px;
+  background: #f0f0f0;
+}
+main {
+  background: #f0f0f0;
+  border-bottom: 4px solid #ccc;
+  margin-bottom: 200px;
+}
