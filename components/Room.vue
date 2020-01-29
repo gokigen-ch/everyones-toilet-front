@@ -1,7 +1,7 @@
 <template>
   <div>
     <main class="room">
-        <section class="room-wall">
+        <section class="room-wall" v-on:click="showRakugakiForm">
         </section>
         <section class="room-floor">
             <img class="paper" v-if="paperImg" :src="paperImg" :alt="paperAlt">
@@ -34,7 +34,68 @@ export default {
       twitterShareHref: function(){
         return 'http://twitter.com/intent/tweet?text=' + this.num + '番目の個室に入りました%0a&hashtags=みんなのトイレ&url=https://everyones-toilet.tokyo'
       }
-  }
+  },
+  data: function () {
+    return {
+      rakugakiNum: 0
+    }
+  },
+  methods: {
+    showRakugakiForm: function(e){
+      console.log(e)
+
+      //一つ前の落書きフォームが残っていたら削除する
+      if(document.getElementById("rakugaki_form_" + this.rakugakiNum ) != null){
+        document.getElementById("rakugaki_form_" + this.rakugakiNum ).remove();
+      }
+      if(document.getElementById("fukidashi") != null){
+        document.getElementById("fukidashi").remove();
+      }
+
+      var roomWall = document.getElementsByClassName("room-wall")[0]
+      
+      //スマホ用に縦スクロール対応する
+      var offsetY = e.offsetY + roomWall.scrollTop
+      //room-wallは横スクロール対応しているため、scrollLeftを足している。（縦スクロールは対応していない。）
+      var offsetX = e.offsetX + roomWall.scrollLeft
+      console.log("offsetY=" + offsetY)
+      console.log("offsetX=" + offsetX)
+
+      // フォームを追加する
+      this.rakugakiNum++;
+      var form = document.createElement("form")
+      form.id = "rakugaki_form_" + this.rakugakiNum
+      roomWall.appendChild(form)
+      var input = document.createElement("input")
+      input.type = "text"
+      input.id = "rakugaki_input_" + this.rakugakiNum
+      form.appendChild(input)
+
+      // フォームの位置を調整する
+      form.style.position = "absolute"
+      form.style.top = (Number(offsetY) - 0 ) + "px"
+      form.style.left = (Number(offsetX) - 8 ) + "px"
+
+      // 吹き出しを追加する
+      var fukidashi = document.createElement("div")
+      fukidashi.id = "fukidashi"
+      fukidashi.style.position = "absolute"
+      fukidashi.style.top = (Number(offsetY) - 40) + "px"
+      fukidashi.style.left = (Number(offsetX) - 8) + "px"
+      fukidashi.setAttribute(this.$options._scopeId ,null)
+      // コード汚いので後で修正したい
+      fukidashi.insertAdjacentHTML('afterbegin','落書きできるよ〜<span ' + this.$options._scopeId + '></span>')
+      roomWall.appendChild(fukidashi)
+
+      console.log('rakugaki_input_' + this.rakugakiNum)
+      var newRakugakiInput = document.getElementById('rakugaki_input_' + this.rakugakiNum)
+      console.log(newRakugakiInput)
+
+      // 新しく表示した入力フォームにフォーカスをあてる
+      newRakugakiInput.focus()
+
+    }
+  },
 }
 </script>
 <style scoped>
@@ -49,7 +110,7 @@ export default {
   overflow: scroll;
 }
 
-#fukidashi{
+#fukidashi {
   position: relative;
   padding: 0 8px;
   height: 30px;
