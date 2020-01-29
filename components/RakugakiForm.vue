@@ -28,8 +28,8 @@ export default {
   computed: {
     styles () {
       return {
-        '--top': this.top + 'px',
-        '--left': this.left + 'px'
+        'top': this.top + 'px',
+        'left': this.left + 'px'
       }
     }
   },
@@ -56,11 +56,7 @@ export default {
 <style scoped>
 
 #rakugaki_form{
-  --top: 0;
-  --left: 0;
   position: absolute;
-  top: var(--top);
-  left: var(--left);
 }
 
 #fukidashi {
