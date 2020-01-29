@@ -1,7 +1,7 @@
 <template>
   <div>
     <main class="room">
-        <section class="room-wall" v-on:click="showFukidashi">
+        <section class="room-wall" v-on:click="showRakugakiForm">
         </section>
         <section class="room-floor">
             <img class="paper" v-if="paperImg" :src="paperImg" :alt="paperAlt">
@@ -41,7 +41,7 @@ export default {
     }
   },
   methods: {
-    showFukidashi: function(e){
+    showRakugakiForm: function(e){
       console.log(e)
 
       //一つ前の落書きフォームが残っていたら削除する
