@@ -64,8 +64,8 @@ export default {
       this.rakugakiForm = new RakugakiFormConstructor({
         propsData: {
           parent: e.target,
-          top: (Number(offsetY) - 40),
-          left: (Number(offsetX) - 8)
+          top: offsetY,
+          left: offsetX
         }
       })
       this.rakugakiForm.$mount()
