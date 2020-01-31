@@ -14,6 +14,7 @@ https://modest-jang-5804fb.netlify.com/
 ``` bash
 # install dependencies
 $ yarn install
+$ cp .env.example .env
 
 # serve with hot reload at localhost:3000
 $ yarn dev
