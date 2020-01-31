@@ -1,10 +1,11 @@
 <template>
-  <div id="rakugaki_form" :style="styles">
-    <div id="fukidashi">落書きできるよ〜<span></span></div>
-    <input id="rakugaki_input" type="text" v-model="value" @keypress.enter.prevent="keypress" @blur="blur">
-  </div>
+  <form method="POST" class="rakugaki_form" :style="styles" @submit="submit">
+    <div class="fukidashi">落書きできるよ〜<span></span></div>
+    <input id="rakugaki_input" type="text" v-model="text">
+  </form>
 </template>
 <script>
+import axios from 'axios'
 export default {
   props: {
     parent: {
@@ -22,30 +23,55 @@ export default {
   },
   data: function() {
     return {
-      value: this.text
+      text: this.text
     };
   },
   computed: {
     styles () {
       return {
-        'top': this.top + 'px',
-        'left': this.left + 'px'
+        'top': this.top  - 40 + 'px',
+        'left': this.left - 8 + 'px'
       }
     }
   },
   mounted: function() {
-    this.parent.appendChild(this.$el);
+    this.parent.appendChild(this.$el)
     this.$nextTick(() => {
-      document.getElementById('rakugaki_input').focus();
+      // TODO:document全体から探すのではなくて、このコンポーネントの中から探したい
+      document.getElementById('rakugaki_input').focus()
     });
   },
   methods: {
-    keypress: function() {
-      this.$emit("change", this.value);
-      // this.$destroy();
-    },
-    blur: function() {
-      // this.$destroy();
+    submit: async function(e) {
+      e.preventDefault()
+
+      // トイレの落書き表示に反映する
+      // 落書きをComponentにするか？大げさな気がするので一旦しないことにする。
+      var p = document.createElement('p');
+      p.style.position = 'absolute'
+      p.style.top = this.top + 'px'
+      p.style.left = this.left + 'px'
+      p.textContent = this.text
+      this.parent.appendChild(p)
+
+      // axios.postの待ち時間が思ったより長いので、先に表示だけ消しておく
+      this.$el.style.display = "none"
+
+      try {
+        const response = await axios.post(process.env.BASE_URL + "/api/graffitis",
+          {
+            text: this.text,
+            position_x: this.left,
+            position_y: this.top
+          }
+        )        
+        console.log('response data', response)
+      }
+      catch( error){
+        console.log("response error", error)
+      }
+
+      this.$destroy();
     }
   },
   destroyed: function() {
@@ -55,11 +81,11 @@ export default {
 </script>
 <style scoped>
 
-#rakugaki_form{
+.rakugaki_form{
   position: absolute;
 }
 
-#fukidashi {
+.fukidashi {
   position: relative;
   padding: 0 8px;
   margin-bottom: 8px;
@@ -69,7 +95,7 @@ export default {
   line-height: 30px;
 }
 
-#fukidashi span {
+.fukidashi span {
   position: absolute;
   bottom: -4px;
   width: 8px;
