@@ -46,7 +46,9 @@ export default {
       e.preventDefault()
 
       // トイレの落書き表示に反映する
-      // 落書きをComponentにするか？大げさな気がするので一旦しないことにする。
+      // TODO: emitでイベントを親(Room)に渡して、親でappendChildをしてもらいたい。
+      // 軽くやってうまくいかなかったからいったん諦める。ちゃんとRoomと親子関係になれていないのかもしれない
+      // this.$emit('addRakugaki', this.text, this.top , this.left)
       var p = document.createElement('p');
       p.style.position = 'absolute'
       p.style.top = this.top + 'px'

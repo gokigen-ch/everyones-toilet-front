@@ -24,6 +24,7 @@
 <script>
 import Vue from 'vue'
 import RakugakiForm from '@/components/RakugakiForm.vue'
+import axios from 'axios'
 
 const RakugakiFormConstructor = Vue.extend(RakugakiForm)
 
@@ -43,11 +44,13 @@ export default {
   data: function () {
     return {
       rakugakiForm: null,
+      data: null
     }
   },
   methods: {
     showRakugakiForm: function(e){
       console.log(e)
+      // TODO: ここのコードがダサい
       var roomWall = document.getElementsByClassName("room-wall")[0]
       
       //スマホ用に縦スクロール対応する
@@ -69,8 +72,33 @@ export default {
         }
       })
       this.rakugakiForm.$mount()
+    },
+    addRakugaki: function(text,top,left){
+        let p = document.createElement('p');
+        p.style.position = 'absolute'
+        p.style.top = top + 'px'
+        p.style.left = left + 'px'
+        p.textContent = text
+
+        // TODO: ここのコードがダサい
+        var roomWall = document.getElementsByClassName("room-wall")[0]
+        roomWall.appendChild(p)
+
     }
   },
+  // TODO: asyncDataにしたいけど動かないからしかたなくmountedで書いてみる
+  mounted : async function(){
+    try {
+      const { data } = await axios.get(process.env.BASE_URL + "/api/graffitis")          
+      console.log('response data', data)
+      data.forEach(d => {
+        this.addRakugaki(d.text,d.position_y,d.position_x)
+      })
+    }
+    catch( error){
+      console.log("response error", error)
+    }
+  }
 }
 </script>
 <style scoped>
