@@ -8,10 +8,6 @@
 import axios from 'axios'
 export default {
   props: {
-    parent: {
-      type: Element,
-      require: true
-    },
     top :{
       type: Number,
       require: true
@@ -35,29 +31,20 @@ export default {
     }
   },
   mounted: function() {
-    this.parent.appendChild(this.$el)
-    this.$nextTick(() => {
-      // TODO:document全体から探すのではなくて、このコンポーネントの中から探したい
-      document.getElementById('rakugaki_input').focus()
-    });
+    // TODO: かっこよく書きたい
+    document.getElementById('rakugaki_input').focus()
+  },
+
+  updated: function() {
+    // TODO: かっこよく書きたい
+    document.getElementById('rakugaki_input').focus()
   },
   methods: {
     submit: async function(e) {
       e.preventDefault()
 
       // トイレの落書き表示に反映する
-      // TODO: emitでイベントを親(Room)に渡して、親でappendChildをしてもらいたい。
-      // 軽くやってうまくいかなかったからいったん諦める。ちゃんとRoomと親子関係になれていないのかもしれない
-      // this.$emit('addRakugaki', this.text, this.top , this.left)
-      var p = document.createElement('p');
-      p.style.position = 'absolute'
-      p.style.top = this.top + 'px'
-      p.style.left = this.left + 'px'
-      p.textContent = this.text
-      this.parent.appendChild(p)
-
-      // axios.postの待ち時間が思ったより長いので、先に表示だけ消しておく
-      this.$el.style.display = "none"
+      this.$emit('addRakugaki', this.text, this.top , this.left)
 
       try {
         const response = await axios.post(process.env.BASE_URL + "/api/graffitis",
@@ -72,12 +59,7 @@ export default {
       catch( error){
         console.log("response error", error)
       }
-
-      this.$destroy();
     }
-  },
-  destroyed: function() {
-    this.$el.remove();
   }  
 }
 </script>
