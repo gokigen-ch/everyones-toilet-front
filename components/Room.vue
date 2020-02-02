@@ -1,8 +1,11 @@
 <template>
   <div>
     <main class="room">
-      <section class="room-wall" @click="showRakugakiForm" @addRakugaki="test">
-        <rakugaki-form v-if="rakugakiFormShow" :top="rakugakiFormTop" :left="rakugakiFormLeft" @addRakugaki="addRakugaki"></rakugaki-form>
+      <section class="room-wall" @click="showRakugakiForm">
+        <rakugaki-form v-if="rakugakiForm.show" :top="rakugakiForm.top" :left="rakugakiForm.left" @addRakugaki="addRakugaki"></rakugaki-form>
+        <p v-for="(rakugaki, key) in rakugakis" :style="rakugaki.styles" :key="key">
+          {{ rakugaki.text }}
+        </p>
       </section>
       <section class="room-floor">
         <img class="paper" v-if="paperImg" :src="paperImg" :alt="paperAlt">
@@ -25,7 +28,6 @@
 <script>
 import Vue from 'vue'
 import RakugakiForm from '@/components/RakugakiForm.vue'
-import axios from 'axios'
 
 export default {
   props: [ 'num' , 'paperImg' , 'toiletImg' ],
@@ -38,16 +40,19 @@ export default {
       },
       twitterShareHref: function(){
         return 'http://twitter.com/intent/tweet?text=' + this.num + '番目の個室に入りました%0a&hashtags=みんなのトイレ&url=https://everyones-toilet.tokyo'
-      }
+      },
   },
   components: {
     RakugakiForm
   },
   data: function () {
     return {
-      rakugakiFormTop: 0,
-      rakugakiFormLeft: 0,
-      rakugakiFormShow: false
+      rakugakiForm: {
+        top: 0,
+        left: 0,
+        show: false
+      },
+      rakugakis:[]
     }
   },
   methods: {
@@ -63,36 +68,35 @@ export default {
       var roomWall = document.getElementsByClassName("room-wall")[0]
       
       //スマホ用に縦スクロール対応する
-      this.rakugakiFormTop = e.offsetY + roomWall.scrollTop
+      this.rakugakiForm.top = e.offsetY + roomWall.scrollTop
       //room-wallは横スクロール対応しているため、scrollLeftを足している。（縦スクロールは対応していない。）
-      this.rakugakiFormLeft = e.offsetX + roomWall.scrollLeft
+      this.rakugakiForm.left = e.offsetX + roomWall.scrollLeft
 
-      if(this.rakugakiFormShow != true){
-        this.rakugakiFormShow = true
+      if(this.rakugakiForm.show != true){
+        this.rakugakiForm.show = true
       }
     },
     addRakugaki: function(text,top,left){
       console.log('addRakugaki')
-        this.rakugakiFormShow = false
+      this.rakugakiForm.show = false
 
-      let p = document.createElement('p');
-      p.style.position = 'absolute'
-      p.style.top = top + 'px'
-      p.style.left = left + 'px'
-      p.textContent = text
-
-      // TODO: ここのコードがダサい
-      var roomWall = document.getElementsByClassName("room-wall")[0]
-      roomWall.appendChild(p)
-    },
-    test: function(){
-      console.log('test')
+      this.rakugakis.push(
+        {
+          styles:{
+            position: 'absolute',
+            top: top + 'px',
+            left: left + 'px'
+          },
+          text: text
+        }
+      )
     }
   },
   // TODO: asyncDataにしたいけど動かないからしかたなくmountedで書いてみる
   mounted : async function(){
+    console.log('mouted and feching data')
     try {
-      const { data } = await axios.get(process.env.BASE_URL + "/api/graffitis")          
+      const { data } = await this.$axios.get(process.env.BASE_URL + "/api/graffitis")          
       console.log('response data', data)
       data.forEach(d => {
         this.addRakugaki(d.text,d.position_y,d.position_x)

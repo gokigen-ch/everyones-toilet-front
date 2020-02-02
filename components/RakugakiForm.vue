@@ -5,7 +5,6 @@
   </form>
 </template>
 <script>
-import axios from 'axios'
 export default {
   props: {
     top :{
@@ -47,7 +46,7 @@ export default {
       this.$emit('addRakugaki', this.text, this.top , this.left)
 
       try {
-        const response = await axios.post(process.env.BASE_URL + "/api/graffitis",
+        const response = await this.$axios.post(process.env.BASE_URL + "/api/graffitis",
           {
             text: this.text,
             position_x: this.left,
