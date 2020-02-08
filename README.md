@@ -7,6 +7,7 @@
 [![Netlify Status](https://api.netlify.com/api/v1/badges/3cde4ad8-39b5-4e0b-b379-633443b7244a/deploy-status)](https://app.netlify.com/sites/modest-jang-5804fb/deploys)  
 https://modest-jang-5804fb.netlify.com/  
 - develop(VPS)
+
 git cloneしたパスで$ yarn generateする。
 - master
 未設定
