@@ -1,6 +1,6 @@
 <template>
   <div>
-      <room num="2" paper-img="/images/paper03.png" toilet-img="/images/toilet03.png" />
+      <room :num="2" paper-img="/images/paper03.png" toilet-img="/images/toilet03.png" />
   </div>
 </template>
 <script>

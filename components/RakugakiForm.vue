@@ -14,6 +14,10 @@ export default {
     left :{
       type: Number,
       require: true
+    },
+    room :{
+      type: Number,
+      require: true
     }
   },
   data: function() {
@@ -46,11 +50,12 @@ export default {
       this.$emit('addRakugaki', this.text, this.top , this.left)
 
       try {
-        const response = await this.$axios.post(process.env.BASE_URL + "/api/graffitis",
+        const response = await this.$axios.post(process.env.BASE_URL + `/api/rooms/${this.room}/graffitis`,
           {
             text: this.text,
             position_x: this.left,
-            position_y: this.top
+            position_y: this.top,
+            room: this.room
           }
         )        
         console.log('response data', response)

@@ -2,7 +2,7 @@
   <div>
     <main class="room">
       <section class="room-wall" @click="showRakugakiForm">
-        <rakugaki-form v-if="rakugakiForm.show" :top="rakugakiForm.top" :left="rakugakiForm.left" @addRakugaki="addRakugaki"></rakugaki-form>
+        <rakugaki-form v-if="rakugakiForm.show" :top="rakugakiForm.top" :left="rakugakiForm.left" :room="this.num" @addRakugaki="addRakugaki"></rakugaki-form>
         <p v-for="(rakugaki, key) in rakugakis" :style="rakugaki.styles" :key="key">
           {{ rakugaki.text }}
         </p>
@@ -30,17 +30,24 @@ import Vue from 'vue'
 import RakugakiForm from '@/components/RakugakiForm.vue'
 
 export default {
-  props: [ 'num' , 'paperImg' , 'toiletImg' ],
-    computed: {
-      paperAlt: function () {
-        return this.num + '番目の個室のペーパーホルダー'
-      },
-      toiletAlt: function () {
-        return this.num + '番目の個室のトイレ'
-      },
-      twitterShareHref: function(){
-        return 'http://twitter.com/intent/tweet?text=' + this.num + '番目の個室に入りました%0a&hashtags=みんなのトイレ&url=https://everyones-toilet.tokyo'
-      },
+  props: {
+    num :{
+      type: Number,
+      require: true
+    },
+    paperImg: String,
+    toiletImg: String
+  },
+  computed: {
+    paperAlt: function () {
+      return this.num + '番目の個室のペーパーホルダー'
+    },
+    toiletAlt: function () {
+      return this.num + '番目の個室のトイレ'
+    },
+    twitterShareHref: function(){
+      return 'http://twitter.com/intent/tweet?text=' + this.num + '番目の個室に入りました%0a&hashtags=みんなのトイレ&url=https://everyones-toilet.tokyo'
+    },
   },
   components: {
     RakugakiForm
@@ -96,7 +103,7 @@ export default {
   mounted : async function(){
     console.log('mouted and feching data')
     try {
-      const { data } = await this.$axios.get(process.env.BASE_URL + "/api/graffitis")          
+      const { data } = await this.$axios.get(process.env.BASE_URL + `/api/rooms/${this.num}/graffitis`)          
       console.log('response data', data)
       data.forEach(d => {
         this.addRakugaki(d.text,d.position_y,d.position_x)
