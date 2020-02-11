@@ -101,7 +101,18 @@ export default {
   },
   // TODO: asyncDataにしたいけど動かないからしかたなくmountedで書いてみる
   mounted : async function(){
-    console.log('mouted and feching data')
+
+    console.log('mouted')
+    var channel = this.$pusher.subscribe('graffiti-channel');
+
+    channel.bind('add-graffiti-event', (data) => {
+      console.log("my-event from pusher")
+      console.log(data)
+      if( data.room === this.num ){
+        this.addRakugaki(data.text, data.position_y, data.position_x)
+      }
+    });
+
     try {
       const { data } = await this.$axios.get(process.env.BASE_URL + `/api/rooms/${this.num}/graffitis`)          
       console.log('response data', data)
