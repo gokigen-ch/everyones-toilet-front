@@ -1,72 +1,66 @@
 <template>
-  <div class="container">
-    <div>
-      <logo />
-      <h1 class="title">
-        everyones-toilet-front
+  <div>
+    <header>
+      <h1>
+        <img src="/images/logo-everyones-toilet.png" alt="みんなのトイレ" />
       </h1>
-      <h2 class="subtitle">
-        omoide
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
-    </div>
+    </header>
+    <main>
+      <ul class="everyones-toilet">
+        <li class="toilet01">
+          <img src="/images/toilet-close-used.png" alt="個室1" />
+        </li>
+        <li class="toilet02"><nuxt-link to="/rooms/2" id="toilet2"></nuxt-link></li>
+        <li class="toilet03"><nuxt-link to="/rooms/3" id="toilet3"></nuxt-link></li>
+        <li class="toilet04"><img src="/images/toilet-close-used.png" alt="個室4"></li>
+        <li class="toilet05"><img src="/images/malfunction.png" alt="個室5"></li>
+      </ul>
+    </main>
+    <footer>
+      &copy;みんなのトイレ
+    </footer>
   </div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-
 export default {
-  components: {
-    Logo
-  }
 }
 </script>
 
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
+<style scoped>
+/* トップページ */
+.everyones-toilet {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+.everyones-toilet li {
+  width: 20%;
+  padding: 0 12px;
+}
+.everyones-toilet li img {
   display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
+  padding-bottom: 12px;
+}
+.everyones-toilet li a {
+  display: block;
+  height: 100%;
+  background: url(/images/toilet-close.png) no-repeat ;
+  padding-bottom: 12px;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+.everyones-toilet li a:hover,
+.everyones-toilet li a:focus {
+  background-image: url(/images/toilet-open.png);
 }
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
+@media all and (max-width: 980px) {
+  .everyones-toilet li a {
+    background-size: 100%;
+  }
 }
 
-.links {
-  padding-top: 15px;
-}
 </style>

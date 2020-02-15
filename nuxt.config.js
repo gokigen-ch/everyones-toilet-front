@@ -1,4 +1,4 @@
-
+require('dotenv').config()
 export default {
   mode: 'universal',
   /*
@@ -23,12 +23,12 @@ export default {
   ** Global CSS
   */
   css: [
+    '@/assets/css/common.css'
   ],
   /*
   ** Plugins to load before mounting the App
   */
-  plugins: [
-  ],
+  plugins: [ '~plugins/vue-pusher.js' ],
   /*
   ** Nuxt.js dev-modules
   */
