@@ -12,7 +12,7 @@
         </li>
         <li class="toilet02"><nuxt-link to="/rooms/2" id="toilet2"></nuxt-link></li>
         <li class="toilet03"><nuxt-link to="/rooms/3" id="toilet3"></nuxt-link></li>
-        <li class="toilet04"><img src="/images/toilet-close-used.png" alt="個室4"></li>
+        <li class="toilet04"><nuxt-link to="/rooms/4" id="toilet4"></nuxt-link></li>
         <li class="toilet05"><img src="/images/malfunction.png" alt="個室5"></li>
       </ul>
     </main>
