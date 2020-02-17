@@ -77,6 +77,9 @@ export default {
         return
       }
 
+      // スマホのときにスクロールするのを防ぐ
+      event.preventDefault()
+
       let to = this.getDraggingPoint(event)
       let from = this.lastPosition === null ? to : this.lastPosition
       this.drawpoint.push({from,to})
