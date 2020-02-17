@@ -1,10 +1,12 @@
 <template>
   <div>
     <div class="canvas-parent" id="canvasParent">
-      <canvas id="canvas"></canvas>
+      <canvas id="canvas" @mousedown="dragStart" @touchstart="dragStart" 
+                          @mousemove="dragging" @touchmove="dragging"
+                          @mouseup="dragEnd" @mouseout="dragEnd" @touchend="dragEnd" @touchcancel="dragEnd"></canvas>
     </div>
     <main class="room">
-      <button id="clear-button">全消し</button>
+      <button id="clear-button" @click="clear">全消し</button>
     </main>
     <footer>
         &copy;みんなのトイレ
@@ -34,58 +36,53 @@ export default {
   },
   data: function () {
     return {
-      rakugakiForm: {
-        top: 0,
-        left: 0,
-        show: false
-      },
-      rakugakis:[],
       drawpoint:[],
       // マウスがドラッグされているか(クリックされたままか)判断するためのフラグ
       isDrag: false,
-      context: null,
       lastPosition: null,
+      context: null,
       canvas: null
     }
   },
   methods: {
-    // 絵を書く
-    draw(x, y) {
+    getDraggingPoint(event){
+        if(event.type === 'mousemove'){
+          return {
+            x: event.offsetX,
+            y: event.offsetY 
+          } 
+        }
+        else if(event.type === 'touchmove'){
+          let x,y
+          if (event.touches && event.touches[0]) {
+            x = event.touches[0].clientX;
+            y = event.touches[0].clientY;
+          } else if (event.originalEvent && event.originalEvent.changedTouches[0]) {
+            x = event.originalEvent.changedTouches[0].clientX;
+            y = event.originalEvent.changedTouches[0].clientY;
+          } else if (event.clientX && event.clientY) {
+            x = event.clientX;
+            y = event.clientY;
+          }
+          return { x,y }
+        }
+        else{
+          console.log("dragging event error")
+          throw "dragging event error"
+        }
+    },
+    dragging(event) {
       // マウスがドラッグされていなかったら処理を中断する。
-      // ドラッグしながらしか絵を書くことが出来ない。
       if(!this.isDrag) {
-        return;
+        return
       }
 
-      let from,to;
+      let to = this.getDraggingPoint(event)
+      let from = this.lastPosition === null ? to : this.lastPosition
+      this.drawpoint.push({from,to})
 
-      // ドラッグの開始時
-      if (this.lastPosition.x === null || this.lastPosition.y === null) {
-        from = {
-          x: x,
-          y: y
-        }
-      // ドラッグ中
-      } else {
-        from = {
-          x: this.lastPosition.x,
-          y: this.lastPosition.y
-        }
-      }
-
-      to = {
-          x: x,
-          y: y
-      }
-
-      this.drawpoint.push(
-        {
-          from,to
-        }
-      )
       // 現在のマウス位置を記録して、次回線を書くときの開始点に使う
-      this.lastPosition.x = x;
-      this.lastPosition.y = y;
+      this.lastPosition = to
     },
     // canvas上に書いた絵を全部消す
     clear() {
@@ -96,47 +93,26 @@ export default {
     },
     dragEnd(event) {
       // 線を書く処理の終了を宣言する
-      this.isDrag = false;
+      this.isDrag = false
       // 描画中に記録していた値をリセットする
-      this.lastPosition.x = null;
-      this.lastPosition.y = null;
+      this.lastPosition = null
    },
-
-  // マウス操作やボタンクリック時のイベント処理を定義する
-  initEventHandler() {
-    console.log("initEventHandler")
-    const clearButton = document.querySelector('#clear-button');
-    clearButton.addEventListener('click', this.clear);
-
-    canvas.addEventListener('mousedown', this.dragStart);
-    canvas.addEventListener('mouseup', this.dragEnd);
-    canvas.addEventListener('mouseout', this.dragEnd);
-
-    canvas.addEventListener('mousemove', (event) => {
-      this.draw(event.offsetX , event.offsetY);
-    });
-  },
-  frame_draw(){
-    // 「context.beginPath()」と「context.closePath()」を都度draw関数内で実行するよりも、
-    // 線の描き始め(dragStart関数)と線の描き終わり(dragEnd)で1回ずつ読んだほうがより綺麗に線画書ける
-    this.context.beginPath()
-    this.drawpoint.forEach((element) => {
-      console.log("foreach")
-      // this.context.lineCap = 'round'; // 丸みを帯びた線にする
-      // this.context.lineJoin = 'round'; // 丸みを帯びた線にする
-      // this.context.lineWidth = 5; // 線の太さ
-      // this.context.strokeStyle = 'black'; // 線の色
-      this.context.moveTo(element.from.x, element.from.y)
-      this.context.lineTo(element.to.x, element.to.y)
-      this.context.stroke()
-    })
-    this.context.closePath()
-  },
-  resize(){
-    let canvasParent = document.getElementById("canvasParent");
-    this.canvas.width = canvasParent.clientWidth;
-    this.canvas.height = canvasParent.clientHeight;
-  },
+    draw(){
+      // 「context.beginPath()」と「context.closePath()」を都度draw関数内で実行するよりも、
+      // 線の描き始め(dragStart関数)と線の描き終わり(dragEnd)で1回ずつ読んだほうがより綺麗に線画書ける
+      this.context.beginPath()
+      this.drawpoint.forEach((element) => {
+        this.context.moveTo(element.from.x, element.from.y)
+        this.context.lineTo(element.to.x, element.to.y)
+        this.context.stroke()
+      })
+      this.context.closePath()
+    },
+    resize(){
+      let canvasParent = document.getElementById("canvasParent");
+      this.canvas.width = canvasParent.clientWidth;
+      this.canvas.height = canvasParent.clientHeight;
+    },
   },
   // TODO: asyncDataにしたいけど動かないからしかたなくmountedで書いてみる
   mounted : function(){
@@ -153,15 +129,9 @@ export default {
 
     let world = () => {
         this.resize();
-        this.frame_draw();
+        this.draw();
     };
     setInterval(() => world(), 1000/FRAMERATE);
-
-    // 直前のマウスのcanvas上のx座標とy座標を記録する
-    this.lastPosition = { x: null, y: null };
-
-    // イベント処理を初期化する
-    this.initEventHandler();
   }
 }
 </script>
