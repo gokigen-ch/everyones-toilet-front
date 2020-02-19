@@ -1,11 +1,13 @@
 <template>
   <div>
     <div class="canvas-parent" id="canvasParent">
-      <canvas id="canvas" @mousedown="dragStart" @touchstart="dragStart" 
-                          @mousemove="dragging" @touchmove="dragging"
+      <canvas id="canvas" @mousedown="press" @touchstart="press" 
+                          @mousemove="move" @touchmove="move"
                           @mouseup="dragEnd" @mouseout="dragEnd" @touchend="dragEnd" @touchcancel="dragEnd"></canvas>
     </div>
     <main class="room">
+      <button id="free-mode-button" @click="chanageMode('free')">フリーハンド</button>
+      <button id="line-mode-button" @click="chanageMode('line')">直線</button>
       <button id="clear-button" @click="clear">全消し</button>
     </main>
     <footer>
@@ -40,19 +42,30 @@ export default {
       // マウスがドラッグされているか(クリックされたままか)判断するためのフラグ
       isDrag: false,
       lastPosition: null,
+      lastLinePosition: null,
       context: null,
-      canvas: null
+      canvas: null,
+      mode: 'free'
     }
   },
   methods: {
-    getDraggingPoint(event){
-        if(event.type === 'mousemove'){
+    chanageMode(mode){
+      this.mode = mode
+    },
+    getPoint(event){
+      console.log(event.type)
+      console.log(event)
+        if( (event.type === 'mousemove') || (event.type === 'mousedown')){
+          console.log({
+            x: event.offsetX,
+            y: event.offsetY 
+          })
           return {
             x: event.offsetX,
             y: event.offsetY 
           } 
         }
-        else if(event.type === 'touchmove'){
+        else if((event.type === 'touchmove') || (event.type === 'touchstart') ){
           let x,y
           if (event.touches && event.touches[0]) {
             x = event.touches[0].clientX;
@@ -67,11 +80,11 @@ export default {
           return { x,y }
         }
         else{
-          console.log("dragging event error")
-          throw "dragging event error"
+          console.log("move event error")
+          throw "move event error"
         }
     },
-    dragging(event) {
+    move(event) {
       // マウスがドラッグされていなかったら処理を中断する。
       if(!this.isDrag) {
         return
@@ -80,19 +93,35 @@ export default {
       // スマホのときにスクロールするのを防ぐ
       event.preventDefault()
 
-      let to = this.getDraggingPoint(event)
-      let from = this.lastPosition === null ? to : this.lastPosition
-      this.drawpoint.push({from,to})
+      if(this.mode === 'free'){
+        let to = this.getPoint(event)
+        let from = this.lastPosition === null ? to : this.lastPosition
+        this.drawpoint.push({from,to})
 
-      // 現在のマウス位置を記録して、次回線を書くときの開始点に使う
-      this.lastPosition = to
+        // 現在のマウス位置を記録して、次回線を書くときの開始点に使う
+        this.lastPosition = to
+      }
     },
     // canvas上に書いた絵を全部消す
     clear() {
       this.drawpoint = []
     },
-    dragStart(event) {
-      this.isDrag = true;
+    press(event) {
+      this.isDrag = true
+      if(this.mode === 'line'){
+        if( this.lastLinePosition === null ){
+          console.log('line from point')
+          console.log(this.getPoint(event))
+          this.lastLinePosition = this.getPoint(event)
+        }
+        else{
+          console.log('line to point =' + this.getPoint(event) )
+          let to = this.getPoint(event)
+          let from = this.lastLinePosition
+          this.drawpoint.push({from,to})
+          this.lastLinePosition = null
+        }
+      }
     },
     dragEnd(event) {
       // 線を書く処理の終了を宣言する
@@ -102,7 +131,7 @@ export default {
    },
     draw(){
       // 「context.beginPath()」と「context.closePath()」を都度draw関数内で実行するよりも、
-      // 線の描き始め(dragStart関数)と線の描き終わり(dragEnd)で1回ずつ読んだほうがより綺麗に線画書ける
+      // 線の描き始め(press関数)と線の描き終わり(dragEnd)で1回ずつ読んだほうがより綺麗に線画書ける
       this.context.beginPath()
       this.drawpoint.forEach((element) => {
         this.context.moveTo(element.from.x, element.from.y)
