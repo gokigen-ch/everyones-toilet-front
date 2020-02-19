@@ -6,8 +6,10 @@
                           @mouseup="dragEnd" @mouseout="dragEnd" @touchend="dragEnd" @touchcancel="dragEnd"></canvas>
     </div>
     <main class="room">
-      <button id="free-mode-button" @click="chanageMode('free')">フリーハンド</button>
-      <button id="line-mode-button" @click="chanageMode('line')">直線</button>
+      <input type="radio" id="modeFree" name="mode" value="free" v-model="mode" checked>
+      <label for="modeFree">フリーハンド</label>
+      <input type="radio" id="modeLine" name="mode" value="line" v-model="mode">
+      <label for="modeLine">直線</label>
       <button id="clear-button" @click="clear">全消し</button>
     </main>
     <footer>
