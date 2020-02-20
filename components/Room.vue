@@ -99,8 +99,7 @@ export default {
       )
     }
   },
-  // TODO: asyncDataにしたいけど動かないからしかたなくmountedで書いてみる
-  mounted : async function(){
+  created : async function(){
 
     console.log('mouted')
     var channel = this.$pusher.subscribe('graffiti-channel');
