@@ -1,7 +1,7 @@
 <template>
   <div>
     <main class="room">
-      <section class="room-wall" @click="showRakugakiForm">
+      <section ref="wall" class="room-wall" @click="showRakugakiForm">
         <rakugaki-form v-if="rakugakiForm.show" :top="rakugakiForm.top" :left="rakugakiForm.left" :room="this.num" @addRakugaki="addRakugaki"></rakugaki-form>
         <p v-for="(rakugaki, key) in rakugakis" :style="rakugaki.styles" :key="key">
           {{ rakugaki.text }}
@@ -71,13 +71,13 @@ export default {
         // TODO: エラー表示したい
         return
       }
-      // TODO: ここのコードがダサい
-      var roomWall = document.getElementsByClassName("room-wall")[0]
+
+      const wall = this.$refs.wall
       
       //スマホ用に縦スクロール対応する
-      this.rakugakiForm.top = e.offsetY + roomWall.scrollTop
+      this.rakugakiForm.top = e.offsetY + wall.scrollTop
       //room-wallは横スクロール対応しているため、scrollLeftを足している。（縦スクロールは対応していない。）
-      this.rakugakiForm.left = e.offsetX + roomWall.scrollLeft
+      this.rakugakiForm.left = e.offsetX + wall.scrollLeft
 
       if(this.rakugakiForm.show != true){
         this.rakugakiForm.show = true
