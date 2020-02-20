@@ -1,7 +1,7 @@
 <template>
   <form method="POST" class="rakugaki_form" :style="styles" @submit="submit">
     <div class="fukidashi">落書きできるよ〜<span></span></div>
-    <input id="rakugaki_input" type="text" v-model="text">
+    <input ref="input" id="rakugaki_input" type="text" v-model="text">
   </form>
 </template>
 <script>
@@ -34,13 +34,11 @@ export default {
     }
   },
   mounted: function() {
-    // TODO: かっこよく書きたい
-    document.getElementById('rakugaki_input').focus()
+    this.$refs.input.focus()
   },
 
   updated: function() {
-    // TODO: かっこよく書きたい
-    document.getElementById('rakugaki_input').focus()
+    this.$refs.input.focus()
   },
   methods: {
     submit: async function(e) {
