@@ -87,21 +87,31 @@ export default {
         }
     },
     move(event) {
-      // マウスがドラッグされていなかったら処理を中断する。
-      if(!this.isDrag) {
-        return
-      }
-
       // スマホのときにスクロールするのを防ぐ
       event.preventDefault()
 
       if(this.mode === 'free'){
+        if(!this.isDrag) {
+          return
+        }
+
         let to = this.getPoint(event)
         let from = this.lastPosition === null ? to : this.lastPosition
         this.drawpoint.push({from,to})
 
         // 現在のマウス位置を記録して、次回線を書くときの開始点に使う
         this.lastPosition = to
+      }
+      else if(this.mode === 'line'){
+        if(this.lastLinePosition === null) {
+          return
+        }
+
+        console.log('line move')
+        const to = this.getPoint(event)
+        const from = this.lastLinePosition
+        this.drawpoint[this.drawpoint.length - 1] = { to, from }
+        console.log(this.drawpoint[this.drawpoint.length - 1])
       }
     },
     // canvas上に書いた絵を全部消す
@@ -112,15 +122,17 @@ export default {
       this.isDrag = true
       if(this.mode === 'line'){
         if( this.lastLinePosition === null ){
-          console.log('line from point')
-          console.log(this.getPoint(event))
           this.lastLinePosition = this.getPoint(event)
+          this.drawpoint.push({from: this.lastLinePosition,to :this.lastLinePosition})
+          console.log(this.drawpoint[this.drawpoint.length - 1])
         }
         else{
           console.log('line to point =' + this.getPoint(event) )
-          let to = this.getPoint(event)
-          let from = this.lastLinePosition
-          this.drawpoint.push({from,to})
+          this.drawpoint[this.drawpoint.length - 1] =
+          {
+            to: this.getPoint(event),
+            from: this.lastLinePosition
+          }
           this.lastLinePosition = null
         }
       }
