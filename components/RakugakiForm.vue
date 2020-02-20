@@ -35,7 +35,6 @@ export default {
   },
   mounted: function() {
     this.$refs.input.focus()
-    document.getElementById('rakugaki_input').focus()
   },
 
   updated: function() {
