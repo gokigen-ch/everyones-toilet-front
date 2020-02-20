@@ -3,7 +3,7 @@
     <div class="canvas-parent" id="canvasParent">
       <canvas id="canvas" @mousedown="press" @touchstart="press" 
                           @mousemove="move" @touchmove="move"
-                          @mouseup="dragEnd" @mouseout="dragEnd" @touchend="dragEnd" @touchcancel="dragEnd"></canvas>
+                          @mouseup="release" @mouseout="release" @touchend="release" @touchcancel="release"></canvas>
     </div>
     <main class="room">
       <input type="radio" id="modeFree" name="mode" value="free" v-model="mode" checked>
@@ -55,20 +55,14 @@ export default {
       this.mode = mode
     },
     getPoint(event){
-      console.log(event.type)
-      console.log(event)
-        if( (event.type === 'mousemove') || (event.type === 'mousedown')){
-          console.log({
-            x: event.offsetX,
-            y: event.offsetY 
-          })
+        if( (event.type.includes('mouse')) ){
           return {
             x: event.offsetX,
             y: event.offsetY 
           } 
         }
-        else if((event.type === 'touchmove') || (event.type === 'touchstart') ){
-          let x,y
+        else if((event.type.includes('touch'))){
+            let x,y
           if (event.touches && event.touches[0]) {
             x = event.touches[0].clientX;
             y = event.touches[0].clientY;
@@ -78,11 +72,16 @@ export default {
           } else if (event.clientX && event.clientY) {
             x = event.clientX;
             y = event.clientY;
+          }else if(event.changedTouches && event.changedTouches[0]){
+            x = event.changedTouches[0].clientX;
+            y = event.changedTouches[0].clientY;          
+          }
+          else{
+            throw "move error failed get position"         
           }
           return { x,y }
         }
         else{
-          console.log("move event error")
           throw "move event error"
         }
     },
@@ -107,11 +106,9 @@ export default {
           return
         }
 
-        console.log('line move')
         const to = this.getPoint(event)
         const from = this.lastLinePosition
         this.drawpoint[this.drawpoint.length - 1] = { to, from }
-        console.log(this.drawpoint[this.drawpoint.length - 1])
       }
     },
     // canvas上に書いた絵を全部消す
@@ -124,28 +121,33 @@ export default {
         if( this.lastLinePosition === null ){
           this.lastLinePosition = this.getPoint(event)
           this.drawpoint.push({from: this.lastLinePosition,to :this.lastLinePosition})
-          console.log(this.drawpoint[this.drawpoint.length - 1])
-        }
-        else{
-          console.log('line to point =' + this.getPoint(event) )
-          this.drawpoint[this.drawpoint.length - 1] =
-          {
-            to: this.getPoint(event),
-            from: this.lastLinePosition
-          }
-          this.lastLinePosition = null
         }
       }
     },
-    dragEnd(event) {
-      // 線を書く処理の終了を宣言する
-      this.isDrag = false
-      // 描画中に記録していた値をリセットする
-      this.lastPosition = null
+    release(event) {
+      if(this.mode === 'free'){
+        // 線を書く処理の終了を宣言する
+        this.isDrag = false
+        // 描画中に記録していた値をリセットする
+        this.lastPosition = null
+      }else if(this.mode === 'line'){
+        if( this.lastLinePosition === null ){
+          return
+        }
+
+        this.drawpoint[this.drawpoint.length - 1] =
+        {
+          to: this.getPoint(event),
+          from: this.lastLinePosition
+        }
+        console.log(this.drawpoint[this.drawpoint.length - 1])
+        this.lastLinePosition = null
+      }
+
    },
     draw(){
       // 「context.beginPath()」と「context.closePath()」を都度draw関数内で実行するよりも、
-      // 線の描き始め(press関数)と線の描き終わり(dragEnd)で1回ずつ読んだほうがより綺麗に線画書ける
+      // 線の描き始めと線の描き終わりで1回ずつ読んだほうがより綺麗に線画書ける
       this.context.beginPath()
       this.drawpoint.forEach((element) => {
         this.context.moveTo(element.from.x, element.from.y)
